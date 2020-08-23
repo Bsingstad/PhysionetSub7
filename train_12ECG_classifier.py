@@ -103,7 +103,7 @@ def train_12ECG_classifier(input_directory, output_directory):
     lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler, verbose=1)
 
     model.fit(x=batch_generator(batch_size=batchsize, gen_x=generate_X(ecg_filenames), gen_y=generate_y(y), ohe_labels=classes_for_prediction), 
-    epochs=10, steps_per_epoch=(len(y)/batchsize), class_weight=class_dict, callbacks=[lr_schedule])
+    epochs=7, steps_per_epoch=(len(y)/batchsize), class_weight=class_dict, callbacks=[lr_schedule])
 
     # Save model.
     print('Saving model...')
