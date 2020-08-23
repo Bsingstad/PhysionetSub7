@@ -92,10 +92,18 @@ def train_12ECG_classifier(input_directory, output_directory):
     #gen_z=generate_z(age,gender), ohe_labels = classes_for_prediction),steps_per_epoch=(len(y)/batchsize), epochs=1)
     
     #HUSK Å LEGGE TIL CLASS_DICT
+    def scheduler(epoch, lr):
+        if epoch < 2:
+            lr = 0.001
+            return lr
+        else:
+            return lr * 0.1
+
+
+    lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler, verbose=1)
 
     model.fit(x=batch_generator(batch_size=batchsize, gen_x=generate_X(ecg_filenames), gen_y=generate_y(y), ohe_labels=classes_for_prediction), 
-    epochs=10, steps_per_epoch=(len(y)/batchsize), class_weight=class_dict, callbacks=[tf.keras.callbacks.ReduceLROnPlateau(monitor='AUC', factor=0.1, patience=1, verbose=1, mode='max',
-min_delta=0.0001, cooldown=0, min_lr=0)])
+    epochs=10, steps_per_epoch=(len(y)/batchsize), class_weight=class_dict, callbacks=[lr_schedule])
 
     # Save model.
     print('Saving model...')
@@ -184,20 +192,8 @@ def create_model():
     final_layer = keras.layers.Dense(27, activation="sigmoid")(combined)
     model = keras.models.Model(inputs=inputA, outputs=final_layer)
 
-
-
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.01), metrics=[tf.keras.metrics.BinaryAccuracy(
-            name='accuracy', dtype=None, threshold=0.5),tf.keras.metrics.Recall(name='Recall'),tf.keras.metrics.Precision(name='Precision'), 
-                        tf.keras.metrics.AUC(
-            num_thresholds=200,
-            curve="ROC",
-            summation_method="interpolation",
-            name="AUC",
-            dtype=None,
-            thresholds=None,
-            multi_label=True,
-            label_weights=None,
-        )])
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer=tf.keras.optimizers.Adam(), 
+    metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy', dtype=None, threshold=0.5)])
     return model
 
 

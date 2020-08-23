@@ -64,18 +64,8 @@ def create_model():
 
 
 
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer=tf.keras.optimizers.Adam(learning_rate=0.01), metrics=[tf.keras.metrics.BinaryAccuracy(
-            name='accuracy', dtype=None, threshold=0.5),tf.keras.metrics.Recall(name='Recall'),tf.keras.metrics.Precision(name='Precision'), 
-                        tf.keras.metrics.AUC(
-            num_thresholds=200,
-            curve="ROC",
-            summation_method="interpolation",
-            name="AUC",
-            dtype=None,
-            thresholds=None,
-            multi_label=True,
-            label_weights=None,
-        )])
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer=tf.keras.optimizers.Adam(), 
+    metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy', dtype=None, threshold=0.5)])
   return model
 
 
